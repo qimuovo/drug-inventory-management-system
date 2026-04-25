@@ -8,15 +8,19 @@ import com.hxl.inventory.exception.BusinessException;
 import com.hxl.inventory.exception.ErrorCode;
 import com.hxl.inventory.exception.ThrowUtils;
 import com.hxl.inventory.model.dto.manufacturer.ManufacturerAddRequest;
+import com.hxl.inventory.model.entity.Drug;
 import com.hxl.inventory.model.entity.Manufacturer;
 import com.hxl.inventory.model.dto.manufacturer.ManufacturerQueryRequest;
 import com.hxl.inventory.model.dto.manufacturer.ManufacturerUpdateRequest;
 import com.hxl.inventory.model.vo.ManufacturerVO;
 import com.hxl.inventory.service.ManufacturerService;
+import com.hxl.inventory.service.DrugService;
 import com.hxl.inventory.mapper.ManufacturerMapper;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +33,10 @@ import java.util.stream.Collectors;
 @Service
 public class ManufacturerServiceImpl extends ServiceImpl<ManufacturerMapper, Manufacturer>
     implements ManufacturerService{
+
+    @Lazy
+    @Resource
+    private DrugService drugService;
 
     /**
      * 允许排序字段
@@ -87,6 +95,11 @@ public class ManufacturerServiceImpl extends ServiceImpl<ManufacturerMapper, Man
     @Override
     public boolean deleteManufacturer(Long id) {
         ThrowUtils.throwIf(id == null || id <= 0, ErrorCode.PARAMS_ERROR, "厂家ID错误");
+        // 已被药品关联的厂家不允许删除，避免脏数据
+        long relatedDrugCount = drugService.lambdaQuery()
+                .eq(Drug::getManufacturerId, id)
+                .count();
+        ThrowUtils.throwIf(relatedDrugCount > 0, ErrorCode.OPERATION_ERROR, "该厂家已关联药品，无法删除");
         return this.removeById(id);
     }
 

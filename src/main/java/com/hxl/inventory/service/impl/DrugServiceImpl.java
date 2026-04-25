@@ -15,13 +15,17 @@ import com.hxl.inventory.model.dto.drug.DrugAddRequest;
 import com.hxl.inventory.model.dto.drug.DrugInventorySummaryQueryRequest;
 import com.hxl.inventory.model.dto.drug.DrugQueryRequest;
 import com.hxl.inventory.model.dto.drug.DrugUpdateRequest;
+import com.hxl.inventory.model.entity.InboundItem;
 import com.hxl.inventory.model.entity.Manufacturer;
+import com.hxl.inventory.model.entity.OutboundItem;
 import com.hxl.inventory.model.vo.DrugInventorySummaryExcelVO;
 import com.hxl.inventory.model.vo.DrugInventorySummaryVO;
 import com.hxl.inventory.model.vo.DrugVO;
 import com.hxl.inventory.service.DrugService;
 import com.hxl.inventory.mapper.DrugMapper;
+import com.hxl.inventory.service.InboundItemService;
 import com.hxl.inventory.service.ManufacturerService;
+import com.hxl.inventory.service.OutboundItemService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +48,12 @@ public class DrugServiceImpl extends ServiceImpl<DrugMapper, Drug>
 
     @Resource
     private ManufacturerService manufacturerService;
+
+    @Resource
+    private InboundItemService inboundItemService;
+
+    @Resource
+    private OutboundItemService outboundItemService;
 
     /**
      * 允许排序字段
@@ -126,6 +136,17 @@ public class DrugServiceImpl extends ServiceImpl<DrugMapper, Drug>
     @Override
     public boolean deleteDrug(Long id) {
         ThrowUtils.throwIf(id == null || id <= 0, ErrorCode.PARAMS_ERROR, "药品ID错误");
+        // 若药品已参与入库/出库业务，禁止删除，保证单据历史完整性
+        long inboundRelatedCount = inboundItemService.lambdaQuery()
+                .eq(InboundItem::getDrugId, id)
+                .count();
+        ThrowUtils.throwIf(inboundRelatedCount > 0, ErrorCode.OPERATION_ERROR, "该药品已存在入库记录，无法删除");
+
+        long outboundRelatedCount = outboundItemService.lambdaQuery()
+                .eq(OutboundItem::getDrugId, id)
+                .count();
+        ThrowUtils.throwIf(outboundRelatedCount > 0, ErrorCode.OPERATION_ERROR, "该药品已存在出库记录，无法删除");
+
         return this.removeById(id);
     }
 
