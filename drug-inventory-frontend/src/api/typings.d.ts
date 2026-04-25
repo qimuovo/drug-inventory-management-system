@@ -5,6 +5,12 @@ declare namespace API {
     message?: string;
   };
 
+  type BaseResponsePageDrugInventorySummaryVO_ = {
+    code?: number;
+    data?: PageDrugInventorySummaryVO_;
+    message?: string;
+  };
+
   type BaseResponsePageDrugVO_ = {
     code?: number;
     data?: PageDrugVO_;
@@ -67,6 +73,29 @@ declare namespace API {
     drugCode?: string;
     drugName?: string;
     manufacturerId?: number;
+    specification?: string;
+  };
+
+  type DrugInventorySummaryQueryRequest = {
+    current?: number;
+    drugCode?: string;
+    drugName?: string;
+    manufacturerName?: string;
+    pageSize?: number;
+    sortField?: string;
+    sortOrder?: string;
+  };
+
+  type DrugInventorySummaryVO = {
+    currentInventory?: number;
+    drugCode?: string;
+    drugId?: number;
+    drugName?: string;
+    inboundQuantity?: number;
+    inboundReturnQuantity?: number;
+    manufacturerName?: string;
+    outboundQuantity?: number;
+    outboundReturnQuantity?: number;
     specification?: string;
   };
 
@@ -160,8 +189,8 @@ declare namespace API {
     drugId?: number;
     drugName?: string;
     id?: number;
-    inboundNo?: string;
     inboundItemId?: number;
+    inboundNo?: string;
     operatorId?: number;
     reason?: string;
     returnDate?: string;
@@ -276,8 +305,8 @@ declare namespace API {
     drugName?: string;
     id?: number;
     operatorId?: number;
-    outboundNo?: string;
     outboundItemId?: number;
+    outboundNo?: string;
     reason?: string;
     returnDate?: string;
     returnPrice?: number;
@@ -293,6 +322,14 @@ declare namespace API {
     outboundNo?: string;
     remark?: string;
     updateTime?: string;
+  };
+
+  type PageDrugInventorySummaryVO_ = {
+    current?: number;
+    pages?: number;
+    records?: DrugInventorySummaryVO[];
+    size?: number;
+    total?: number;
   };
 
   type PageDrugVO_ = {

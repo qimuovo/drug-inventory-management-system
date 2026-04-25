@@ -61,6 +61,12 @@ const router = createRouter({
       component: () => import('../views/OutboundReturnCreatePage.vue'),
       meta: { title: '新增出库退库' },
     },
+    {
+      path: '/inventory-summary',
+      name: 'InventorySummary',
+      component: () => import('../views/InventorySummaryPage.vue'),
+      meta: { title: '库存汇总' },
+    },
   ],
 })
 

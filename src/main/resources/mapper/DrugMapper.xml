@@ -107,7 +107,7 @@
                 ORDER BY COALESCE(inv.currentInventory, 0)
             </when>
             <otherwise>
-                ORDER BY d.id DESC
+                ORDER BY d.id
             </otherwise>
         </choose>
         <choose>

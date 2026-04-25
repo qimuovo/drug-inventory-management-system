@@ -50,6 +50,24 @@ export async function deleteDrugUsingDelete(
   });
 }
 
+/** 分页查询库存汇总 POST /api/drug/inventory/summary/page */
+export async function listDrugInventorySummaryByPageUsingPost(
+  body: API.DrugInventorySummaryQueryRequest,
+  options?: { [key: string]: any }
+) {
+  return request<API.BaseResponsePageDrugInventorySummaryVO_>(
+    "/api/drug/inventory/summary/page",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: body,
+      ...(options || {}),
+    }
+  );
+}
+
 /** 分页获取药品列表 POST /api/drug/page */
 export async function listDrugByPageUsingPost(
   body: API.DrugQueryRequest,

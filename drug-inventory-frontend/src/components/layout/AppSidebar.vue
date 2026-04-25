@@ -39,6 +39,10 @@
         <el-icon><RefreshRight /></el-icon>
         <template #title>出库退库管理</template>
       </el-menu-item>
+      <el-menu-item index="/inventory-summary">
+        <el-icon><Download /></el-icon>
+        <template #title>库存汇总</template>
+      </el-menu-item>
     </el-menu>
   </div>
 </template>
