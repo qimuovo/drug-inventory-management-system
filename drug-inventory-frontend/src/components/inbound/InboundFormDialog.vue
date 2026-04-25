@@ -33,7 +33,7 @@
 
     <div v-for="(item, index) in itemList" :key="item.uid" class="itemRow">
       <el-row :gutter="10">
-        <el-col :span="8">
+        <el-col :span="7">
           <el-form-item :label="index === 0 ? '药品' : ''" required>
             <el-select
               v-model="item.drugId"
@@ -52,17 +52,17 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="5">
           <el-form-item :label="index === 0 ? '批号' : ''" required>
             <el-input v-model="item.batchNo" maxlength="64" placeholder="请输入批号" />
           </el-form-item>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="5">
           <el-form-item :label="index === 0 ? '数量' : ''" required>
             <el-input-number v-model="item.quantity" :min="1" :precision="0" style="width: 100%" />
           </el-form-item>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="5">
           <el-form-item :label="index === 0 ? '单价' : ''" required>
             <el-input-number v-model="item.price" :min="0" :precision="2" style="width: 100%" />
           </el-form-item>
