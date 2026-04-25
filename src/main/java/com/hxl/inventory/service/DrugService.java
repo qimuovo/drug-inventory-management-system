@@ -3,10 +3,12 @@ package com.hxl.inventory.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hxl.inventory.model.dto.drug.DrugAddRequest;
+import com.hxl.inventory.model.dto.drug.DrugInventorySummaryQueryRequest;
 import com.hxl.inventory.model.dto.drug.DrugQueryRequest;
 import com.hxl.inventory.model.dto.drug.DrugUpdateRequest;
 import com.hxl.inventory.model.entity.Drug;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hxl.inventory.model.vo.DrugInventorySummaryVO;
 import com.hxl.inventory.model.vo.DrugVO;
 
 /**
@@ -40,4 +42,9 @@ public interface DrugService extends IService<Drug> {
      * 删除药品
      */
     boolean deleteDrug(Long id);
+
+    /**
+     * 分页查询库存汇总
+     */
+    Page<DrugInventorySummaryVO> listDrugInventorySummaryByPage(DrugInventorySummaryQueryRequest queryRequest);
 }

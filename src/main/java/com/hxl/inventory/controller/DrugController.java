@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hxl.inventory.common.BaseResponse;
 import com.hxl.inventory.common.ResultUtils;
 import com.hxl.inventory.model.dto.drug.DrugAddRequest;
+import com.hxl.inventory.model.dto.drug.DrugInventorySummaryQueryRequest;
 import com.hxl.inventory.model.dto.drug.DrugQueryRequest;
 import com.hxl.inventory.model.dto.drug.DrugUpdateRequest;
+import com.hxl.inventory.model.vo.DrugInventorySummaryVO;
 import com.hxl.inventory.model.vo.DrugVO;
 import com.hxl.inventory.service.DrugService;
 import io.swagger.annotations.ApiOperation;
@@ -30,6 +32,16 @@ public class DrugController {
     @ApiOperation("分页获取药品列表")
     public BaseResponse<Page<DrugVO>> listDrugByPage(@RequestBody DrugQueryRequest queryRequest) {
         return ResultUtils.success(drugService.listDrugByPage(queryRequest));
+    }
+
+    /**
+     * 分页查询库存汇总
+     */
+    @PostMapping("/inventory/summary/page")
+    @ApiOperation("分页查询库存汇总")
+    public BaseResponse<Page<DrugInventorySummaryVO>> listDrugInventorySummaryByPage(
+            @RequestBody DrugInventorySummaryQueryRequest queryRequest) {
+        return ResultUtils.success(drugService.listDrugInventorySummaryByPage(queryRequest));
     }
 
     /**

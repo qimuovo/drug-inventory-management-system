@@ -1,6 +1,7 @@
 package com.hxl.inventory.service.impl;
 
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -8,9 +9,11 @@ import com.hxl.inventory.exception.ErrorCode;
 import com.hxl.inventory.exception.ThrowUtils;
 import com.hxl.inventory.model.entity.Drug;
 import com.hxl.inventory.model.dto.drug.DrugAddRequest;
+import com.hxl.inventory.model.dto.drug.DrugInventorySummaryQueryRequest;
 import com.hxl.inventory.model.dto.drug.DrugQueryRequest;
 import com.hxl.inventory.model.dto.drug.DrugUpdateRequest;
 import com.hxl.inventory.model.entity.Manufacturer;
+import com.hxl.inventory.model.vo.DrugInventorySummaryVO;
 import com.hxl.inventory.model.vo.DrugVO;
 import com.hxl.inventory.service.DrugService;
 import com.hxl.inventory.mapper.DrugMapper;
@@ -116,6 +119,20 @@ public class DrugServiceImpl extends ServiceImpl<DrugMapper, Drug>
     public boolean deleteDrug(Long id) {
         ThrowUtils.throwIf(id == null || id <= 0, ErrorCode.PARAMS_ERROR, "药品ID错误");
         return this.removeById(id);
+    }
+
+    @Override
+    public Page<DrugInventorySummaryVO> listDrugInventorySummaryByPage(DrugInventorySummaryQueryRequest queryRequest) {
+        ThrowUtils.throwIf(queryRequest == null, ErrorCode.PARAMS_ERROR, "请求参数为空");
+        long current = queryRequest.getCurrent();
+        long pageSize = queryRequest.getPageSize();
+        ThrowUtils.throwIf(current <= 0 || pageSize <= 0, ErrorCode.PARAMS_ERROR, "分页参数错误");
+
+        Page<DrugInventorySummaryVO> page = new Page<>(current, pageSize);
+        IPage<DrugInventorySummaryVO> resultPage = baseMapper.selectInventorySummaryPage(page, queryRequest);
+        Page<DrugInventorySummaryVO> voPage = new Page<>(resultPage.getCurrent(), resultPage.getSize(), resultPage.getTotal());
+        voPage.setRecords(resultPage.getRecords());
+        return voPage;
     }
 
     /**

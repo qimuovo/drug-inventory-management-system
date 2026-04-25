@@ -1,7 +1,11 @@
 package com.hxl.inventory.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.hxl.inventory.model.entity.Drug;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.hxl.inventory.model.dto.drug.DrugInventorySummaryQueryRequest;
+import com.hxl.inventory.model.vo.DrugInventorySummaryVO;
+import org.apache.ibatis.annotations.Param;
 
 /**
 * @author 29358
@@ -11,6 +15,13 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface DrugMapper extends BaseMapper<Drug> {
 
+    /**
+     * 分页查询库存汇总
+     */
+    IPage<DrugInventorySummaryVO> selectInventorySummaryPage(
+            IPage<DrugInventorySummaryVO> page,
+            @Param("query") DrugInventorySummaryQueryRequest queryRequest
+    );
 }
 
 
