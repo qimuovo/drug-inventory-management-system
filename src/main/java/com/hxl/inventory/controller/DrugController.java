@@ -14,6 +14,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 药品管理接口
@@ -42,6 +43,17 @@ public class DrugController {
     public BaseResponse<Page<DrugInventorySummaryVO>> listDrugInventorySummaryByPage(
             @RequestBody DrugInventorySummaryQueryRequest queryRequest) {
         return ResultUtils.success(drugService.listDrugInventorySummaryByPage(queryRequest));
+    }
+
+    /**
+     * 导出库存汇总
+     */
+    @PostMapping("/inventory/summary/export")
+    @ApiOperation("导出库存汇总")
+    public void exportDrugInventorySummary(
+            @RequestBody DrugInventorySummaryQueryRequest queryRequest,
+            HttpServletResponse response) {
+        drugService.exportDrugInventorySummary(queryRequest, response);
     }
 
     /**

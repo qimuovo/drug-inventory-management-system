@@ -7,6 +7,8 @@ import com.hxl.inventory.model.dto.drug.DrugInventorySummaryQueryRequest;
 import com.hxl.inventory.model.vo.DrugInventorySummaryVO;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
 * @author 29358
 * @description 针对表【t_drug(药品表)】的数据库操作Mapper
@@ -22,6 +24,11 @@ public interface DrugMapper extends BaseMapper<Drug> {
             IPage<DrugInventorySummaryVO> page,
             @Param("query") DrugInventorySummaryQueryRequest queryRequest
     );
+
+    /**
+     * 查询库存汇总列表（导出）
+     */
+    List<DrugInventorySummaryVO> selectInventorySummaryList(@Param("query") DrugInventorySummaryQueryRequest queryRequest);
 }
 
 

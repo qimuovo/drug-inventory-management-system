@@ -1,6 +1,9 @@
 package com.hxl.inventory.service.impl;
 
+import com.alibaba.excel.EasyExcel;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.IORuntimeException;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -13,6 +16,7 @@ import com.hxl.inventory.model.dto.drug.DrugInventorySummaryQueryRequest;
 import com.hxl.inventory.model.dto.drug.DrugQueryRequest;
 import com.hxl.inventory.model.dto.drug.DrugUpdateRequest;
 import com.hxl.inventory.model.entity.Manufacturer;
+import com.hxl.inventory.model.vo.DrugInventorySummaryExcelVO;
 import com.hxl.inventory.model.vo.DrugInventorySummaryVO;
 import com.hxl.inventory.model.vo.DrugVO;
 import com.hxl.inventory.service.DrugService;
@@ -22,6 +26,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -133,6 +141,32 @@ public class DrugServiceImpl extends ServiceImpl<DrugMapper, Drug>
         Page<DrugInventorySummaryVO> voPage = new Page<>(resultPage.getCurrent(), resultPage.getSize(), resultPage.getTotal());
         voPage.setRecords(resultPage.getRecords());
         return voPage;
+    }
+
+    @Override
+    public void exportDrugInventorySummary(DrugInventorySummaryQueryRequest queryRequest, HttpServletResponse response) {
+        ThrowUtils.throwIf(queryRequest == null, ErrorCode.PARAMS_ERROR, "请求参数为空");
+        List<DrugInventorySummaryVO> summaryList = baseMapper.selectInventorySummaryList(queryRequest);
+        List<DrugInventorySummaryExcelVO> excelRows = summaryList.stream().map(item -> {
+            DrugInventorySummaryExcelVO row = new DrugInventorySummaryExcelVO();
+            BeanUtils.copyProperties(item, row);
+            return row;
+        }).collect(Collectors.toList());
+        String fileName = "库存汇总_" + DateUtil.format(new Date(), "yyyyMMddHHmmss") + ".xlsx";
+        try {
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+            response.setHeader(
+                    "Content-disposition",
+                    "attachment;filename*=utf-8''" + URLEncoder.encode(fileName, StandardCharsets.UTF_8.name()).replaceAll("\\+", "%20")
+            );
+            EasyExcel.write(response.getOutputStream(), DrugInventorySummaryExcelVO.class)
+                    .autoCloseStream(false)
+                    .sheet("库存汇总")
+                    .doWrite(excelRows);
+        } catch (IOException e) {
+            throw new IORuntimeException("导出库存汇总失败", e);
+        }
     }
 
     /**

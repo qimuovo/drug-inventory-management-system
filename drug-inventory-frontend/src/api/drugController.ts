@@ -68,6 +68,22 @@ export async function listDrugInventorySummaryByPageUsingPost(
   );
 }
 
+/** 导出库存汇总 POST /api/drug/inventory/summary/export */
+export async function exportDrugInventorySummaryUsingPost(
+  body: API.DrugInventorySummaryQueryRequest,
+  options?: { [key: string]: any }
+) {
+  return request<Blob>("/api/drug/inventory/summary/export", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    responseType: "blob",
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** 分页获取药品列表 POST /api/drug/page */
 export async function listDrugByPageUsingPost(
   body: API.DrugQueryRequest,

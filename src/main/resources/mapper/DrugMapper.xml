@@ -119,4 +119,84 @@
             </otherwise>
         </choose>
     </select>
+
+    <select id="selectInventorySummaryList" resultMap="DrugInventorySummaryResultMap">
+        SELECT
+            d.id AS drugId,
+            d.drug_code AS drugCode,
+            d.drug_name AS drugName,
+            d.specification AS specification,
+            m.manufacturer_name AS manufacturerName,
+            COALESCE(inbound_stat.inboundQuantity, 0) AS inboundQuantity,
+            COALESCE(inbound_return_stat.inboundReturnQuantity, 0) AS inboundReturnQuantity,
+            COALESCE(outbound_stat.outboundQuantity, 0) AS outboundQuantity,
+            COALESCE(outbound_return_stat.outboundReturnQuantity, 0) AS outboundReturnQuantity,
+            COALESCE(inv.currentInventory, 0) AS currentInventory
+        FROM t_drug d
+        LEFT JOIN t_manufacturer m ON d.manufacturer_id = m.id AND m.is_deleted = 0
+        LEFT JOIN (
+            SELECT ii.drug_id, SUM(ii.quantity) AS inboundQuantity
+            FROM t_inbound_item ii
+            WHERE ii.is_deleted = 0
+            GROUP BY ii.drug_id
+        ) inbound_stat ON d.id = inbound_stat.drug_id
+        LEFT JOIN (
+            SELECT ii.drug_id, SUM(ir.return_quantity) AS inboundReturnQuantity
+            FROM t_inbound_return ir
+            INNER JOIN t_inbound_item ii ON ir.inbound_item_id = ii.id
+            WHERE ir.is_deleted = 0 AND ii.is_deleted = 0
+            GROUP BY ii.drug_id
+        ) inbound_return_stat ON d.id = inbound_return_stat.drug_id
+        LEFT JOIN (
+            SELECT oi.drug_id, SUM(oi.quantity) AS outboundQuantity
+            FROM t_outbound_item oi
+            WHERE oi.is_deleted = 0
+            GROUP BY oi.drug_id
+        ) outbound_stat ON d.id = outbound_stat.drug_id
+        LEFT JOIN (
+            SELECT oi.drug_id, SUM(or2.return_quantity) AS outboundReturnQuantity
+            FROM t_outbound_return or2
+            INNER JOIN t_outbound_item oi ON or2.outbound_item_id = oi.id
+            WHERE or2.is_deleted = 0 AND oi.is_deleted = 0
+            GROUP BY oi.drug_id
+        ) outbound_return_stat ON d.id = outbound_return_stat.drug_id
+        LEFT JOIN (
+            SELECT i.drug_id, SUM(i.quantity) AS currentInventory
+            FROM t_inventory i
+            WHERE i.is_deleted = 0
+            GROUP BY i.drug_id
+        ) inv ON d.id = inv.drug_id
+        WHERE d.is_deleted = 0
+        <if test="query != null and query.drugName != null and query.drugName != ''">
+            AND d.drug_name LIKE CONCAT('%', #{query.drugName}, '%')
+        </if>
+        <if test="query != null and query.drugCode != null and query.drugCode != ''">
+            AND d.drug_code LIKE CONCAT('%', #{query.drugCode}, '%')
+        </if>
+        <if test="query != null and query.manufacturerName != null and query.manufacturerName != ''">
+            AND m.manufacturer_name LIKE CONCAT('%', #{query.manufacturerName}, '%')
+        </if>
+        <choose>
+            <when test="query != null and (query.sortField == 'drug_code' or query.sortField == 'drugCode')">
+                ORDER BY d.drug_code
+            </when>
+            <when test="query != null and (query.sortField == 'drug_name' or query.sortField == 'drugName')">
+                ORDER BY d.drug_name
+            </when>
+            <when test="query != null and (query.sortField == 'currentInventory' or query.sortField == 'current_inventory')">
+                ORDER BY COALESCE(inv.currentInventory, 0)
+            </when>
+            <otherwise>
+                ORDER BY d.id
+            </otherwise>
+        </choose>
+        <choose>
+            <when test="query != null and query.sortOrder == 'ascend'">
+                ASC
+            </when>
+            <otherwise>
+                DESC
+            </otherwise>
+        </choose>
+    </select>
 </mapper>

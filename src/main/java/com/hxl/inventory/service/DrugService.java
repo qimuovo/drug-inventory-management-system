@@ -11,6 +11,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.hxl.inventory.model.vo.DrugInventorySummaryVO;
 import com.hxl.inventory.model.vo.DrugVO;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
 * @author 29358
 * @description 针对表【t_drug(药品表)】的数据库操作Service
@@ -47,4 +49,9 @@ public interface DrugService extends IService<Drug> {
      * 分页查询库存汇总
      */
     Page<DrugInventorySummaryVO> listDrugInventorySummaryByPage(DrugInventorySummaryQueryRequest queryRequest);
+
+    /**
+     * 导出库存汇总
+     */
+    void exportDrugInventorySummary(DrugInventorySummaryQueryRequest queryRequest, HttpServletResponse response);
 }

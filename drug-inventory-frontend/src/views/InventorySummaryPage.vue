@@ -65,7 +65,7 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { listDrugInventorySummaryByPageUsingPost } from '@/api/drugController'
+import { exportDrugInventorySummaryUsingPost, listDrugInventorySummaryByPageUsingPost } from '@/api/drugController'
 
 const searchForm = reactive({
   drugName: '',
@@ -116,8 +116,28 @@ const handleRefresh = () => {
   loadData()
 }
 
-const handleExport = () => {
-  ElMessage.info('导出功能暂未实现')
+const handleExport = async () => {
+  try {
+    const res = await exportDrugInventorySummaryUsingPost({
+      drugName: searchForm.drugName.trim() || undefined,
+      drugCode: searchForm.drugCode.trim() || undefined,
+      manufacturerName: searchForm.manufacturerName.trim() || undefined,
+      sortField: sortState.sortField || undefined,
+      sortOrder: sortState.sortOrder || undefined,
+    })
+    const blob = res.data
+    const downloadUrl = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = downloadUrl
+    link.download = `库存汇总_${new Date().toISOString().slice(0, 19).replace(/[-:T]/g, '')}.xlsx`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(downloadUrl)
+    ElMessage.success('导出成功')
+  } catch (error) {
+    ElMessage.error('导出失败')
+  }
 }
 
 const handleSizeChange = () => {
