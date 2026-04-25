@@ -43,6 +43,24 @@ const router = createRouter({
       component: () => import('../views/InboundReturnCreatePage.vue'),
       meta: { title: '新增入库退货' },
     },
+    {
+      path: '/outbound',
+      name: 'Outbound',
+      component: () => import('../views/OutboundPage.vue'),
+      meta: { title: '药品出库管理' },
+    },
+    {
+      path: '/outbound-return',
+      name: 'OutboundReturn',
+      component: () => import('../views/OutboundReturnPage.vue'),
+      meta: { title: '出库退库管理' },
+    },
+    {
+      path: '/outbound-return/create',
+      name: 'OutboundReturnCreate',
+      component: () => import('../views/OutboundReturnCreatePage.vue'),
+      meta: { title: '新增出库退库' },
+    },
   ],
 })
 

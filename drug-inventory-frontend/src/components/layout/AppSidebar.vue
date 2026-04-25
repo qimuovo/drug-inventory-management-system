@@ -31,12 +31,20 @@
         <el-icon><RefreshLeft /></el-icon>
         <template #title>入库退货管理</template>
       </el-menu-item>
+      <el-menu-item index="/outbound">
+        <el-icon><Upload /></el-icon>
+        <template #title>药品出库管理</template>
+      </el-menu-item>
+      <el-menu-item index="/outbound-return">
+        <el-icon><RefreshRight /></el-icon>
+        <template #title>出库退库管理</template>
+      </el-menu-item>
     </el-menu>
   </div>
 </template>
 
 <script setup lang="ts">
-import { OfficeBuilding, Box, Download, RefreshLeft } from '@element-plus/icons-vue'
+import { OfficeBuilding, Box, Download, RefreshLeft, Upload, RefreshRight } from '@element-plus/icons-vue'
 
 defineProps<{
   collapsed: boolean

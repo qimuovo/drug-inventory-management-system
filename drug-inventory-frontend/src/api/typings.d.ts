@@ -29,6 +29,18 @@ declare namespace API {
     message?: string;
   };
 
+  type BaseResponsePageOutboundReturnVO_ = {
+    code?: number;
+    data?: PageOutboundReturnVO_;
+    message?: string;
+  };
+
+  type BaseResponsePageOutboundVO_ = {
+    code?: number;
+    data?: PageOutboundVO_;
+    message?: string;
+  };
+
   type BaseResponseUserLoginVO_ = {
     code?: number;
     data?: UserLoginVO;
@@ -136,6 +148,7 @@ declare namespace API {
     current?: number;
     inboundItemId?: number;
     pageSize?: number;
+    search?: string;
     sortField?: string;
     sortOrder?: string;
   };
@@ -147,6 +160,7 @@ declare namespace API {
     drugId?: number;
     drugName?: string;
     id?: number;
+    inboundNo?: string;
     inboundItemId?: number;
     operatorId?: number;
     reason?: string;
@@ -198,6 +212,89 @@ declare namespace API {
     updateTime?: string;
   };
 
+  type OutboundAddItemRequest = {
+    batchNo?: string;
+    drugId?: number;
+    price?: number;
+    quantity?: number;
+  };
+
+  type OutboundAddRequest = {
+    itemList?: OutboundAddItemRequest[];
+    outboundDate?: string;
+    outboundNo?: string;
+    remark?: string;
+  };
+
+  type OutboundItemVO = {
+    amount?: number;
+    batchNo?: string;
+    drugCode?: string;
+    drugId?: number;
+    drugName?: string;
+    id?: number;
+    outboundId?: number;
+    price?: number;
+    quantity?: number;
+  };
+
+  type OutboundQueryRequest = {
+    current?: number;
+    outboundNo?: string;
+    pageSize?: number;
+    sortField?: string;
+    sortOrder?: string;
+  };
+
+  type OutboundReturnAddItemRequest = {
+    outboundItemId?: number;
+    reason?: string;
+    returnPrice?: number;
+    returnQuantity?: number;
+  };
+
+  type OutboundReturnAddRequest = {
+    itemList?: OutboundReturnAddItemRequest[];
+    reason?: string;
+    returnDate?: string;
+  };
+
+  type OutboundReturnQueryRequest = {
+    current?: number;
+    outboundItemId?: number;
+    pageSize?: number;
+    search?: string;
+    sortField?: string;
+    sortOrder?: string;
+  };
+
+  type OutboundReturnVO = {
+    batchNo?: string;
+    createTime?: string;
+    drugCode?: string;
+    drugId?: number;
+    drugName?: string;
+    id?: number;
+    operatorId?: number;
+    outboundNo?: string;
+    outboundItemId?: number;
+    reason?: string;
+    returnDate?: string;
+    returnPrice?: number;
+    returnQuantity?: number;
+  };
+
+  type OutboundVO = {
+    createTime?: string;
+    id?: number;
+    itemList?: OutboundItemVO[];
+    operatorId?: number;
+    outboundDate?: string;
+    outboundNo?: string;
+    remark?: string;
+    updateTime?: string;
+  };
+
   type PageDrugVO_ = {
     current?: number;
     pages?: number;
@@ -226,6 +323,22 @@ declare namespace API {
     current?: number;
     pages?: number;
     records?: ManufacturerVO[];
+    size?: number;
+    total?: number;
+  };
+
+  type PageOutboundReturnVO_ = {
+    current?: number;
+    pages?: number;
+    records?: OutboundReturnVO[];
+    size?: number;
+    total?: number;
+  };
+
+  type PageOutboundVO_ = {
+    current?: number;
+    pages?: number;
+    records?: OutboundVO[];
     size?: number;
     total?: number;
   };
