@@ -11,6 +11,18 @@ declare namespace API {
     message?: string;
   };
 
+  type BaseResponsePageInboundReturnVO_ = {
+    code?: number;
+    data?: PageInboundReturnVO_;
+    message?: string;
+  };
+
+  type BaseResponsePageInboundVO_ = {
+    code?: number;
+    data?: PageInboundVO_;
+    message?: string;
+  };
+
   type BaseResponsePageManufacturerVO_ = {
     code?: number;
     data?: PageManufacturerVO_;
@@ -73,6 +85,87 @@ declare namespace API {
     updateTime?: string;
   };
 
+  type InboundAddItemRequest = {
+    batchNo?: string;
+    drugId?: number;
+    price?: number;
+    quantity?: number;
+  };
+
+  type InboundAddRequest = {
+    inboundDate?: string;
+    inboundNo?: string;
+    itemList?: InboundAddItemRequest[];
+    remark?: string;
+  };
+
+  type InboundItemVO = {
+    amount?: number;
+    batchNo?: string;
+    drugCode?: string;
+    drugId?: number;
+    drugName?: string;
+    id?: number;
+    inboundId?: number;
+    price?: number;
+    quantity?: number;
+  };
+
+  type InboundQueryRequest = {
+    current?: number;
+    inboundNo?: string;
+    pageSize?: number;
+    sortField?: string;
+    sortOrder?: string;
+  };
+
+  type InboundReturnAddItemRequest = {
+    inboundItemId?: number;
+    reason?: string;
+    returnPrice?: number;
+    returnQuantity?: number;
+  };
+
+  type InboundReturnAddRequest = {
+    itemList?: InboundReturnAddItemRequest[];
+    reason?: string;
+    returnDate?: string;
+  };
+
+  type InboundReturnQueryRequest = {
+    current?: number;
+    inboundItemId?: number;
+    pageSize?: number;
+    sortField?: string;
+    sortOrder?: string;
+  };
+
+  type InboundReturnVO = {
+    batchNo?: string;
+    createTime?: string;
+    drugCode?: string;
+    drugId?: number;
+    drugName?: string;
+    id?: number;
+    inboundItemId?: number;
+    operatorId?: number;
+    reason?: string;
+    returnDate?: string;
+    returnPrice?: number;
+    returnQuantity?: number;
+  };
+
+  type InboundVO = {
+    createTime?: string;
+    id?: number;
+    inboundDate?: string;
+    inboundNo?: string;
+    itemList?: InboundItemVO[];
+    operatorId?: number;
+    remark?: string;
+    updateTime?: string;
+  };
+
   type ManufacturerAddRequest = {
     address?: string;
     contactPerson?: string;
@@ -109,6 +202,22 @@ declare namespace API {
     current?: number;
     pages?: number;
     records?: DrugVO[];
+    size?: number;
+    total?: number;
+  };
+
+  type PageInboundReturnVO_ = {
+    current?: number;
+    pages?: number;
+    records?: InboundReturnVO[];
+    size?: number;
+    total?: number;
+  };
+
+  type PageInboundVO_ = {
+    current?: number;
+    pages?: number;
+    records?: InboundVO[];
     size?: number;
     total?: number;
   };

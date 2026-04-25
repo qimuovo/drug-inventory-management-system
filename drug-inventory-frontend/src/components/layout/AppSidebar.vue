@@ -23,12 +23,20 @@
         <el-icon><Box /></el-icon>
         <template #title>药品管理</template>
       </el-menu-item>
+      <el-menu-item index="/inbound">
+        <el-icon><Download /></el-icon>
+        <template #title>药品入库管理</template>
+      </el-menu-item>
+      <el-menu-item index="/inbound-return">
+        <el-icon><RefreshLeft /></el-icon>
+        <template #title>入库退货管理</template>
+      </el-menu-item>
     </el-menu>
   </div>
 </template>
 
 <script setup lang="ts">
-import { OfficeBuilding, Box } from '@element-plus/icons-vue'
+import { OfficeBuilding, Box, Download, RefreshLeft } from '@element-plus/icons-vue'
 
 defineProps<{
   collapsed: boolean

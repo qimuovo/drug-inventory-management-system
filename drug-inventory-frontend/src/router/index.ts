@@ -25,6 +25,24 @@ const router = createRouter({
       component: () => import('../views/DrugPage.vue'),
       meta: { title: '药品管理' },
     },
+    {
+      path: '/inbound',
+      name: 'Inbound',
+      component: () => import('../views/InboundPage.vue'),
+      meta: { title: '药品入库管理' },
+    },
+    {
+      path: '/inbound-return',
+      name: 'InboundReturn',
+      component: () => import('../views/InboundReturnPage.vue'),
+      meta: { title: '入库退货管理' },
+    },
+    {
+      path: '/inbound-return/create',
+      name: 'InboundReturnCreate',
+      component: () => import('../views/InboundReturnCreatePage.vue'),
+      meta: { title: '新增入库退货' },
+    },
   ],
 })
 
