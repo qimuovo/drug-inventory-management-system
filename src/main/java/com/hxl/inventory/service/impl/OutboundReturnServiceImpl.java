@@ -13,12 +13,14 @@ import com.hxl.inventory.model.dto.outboundreturn.OutboundReturnQueryRequest;
 import com.hxl.inventory.model.entity.Drug;
 import com.hxl.inventory.model.entity.Inventory;
 import com.hxl.inventory.model.entity.OutboundItem;
+import com.hxl.inventory.model.entity.Outbound;
 import com.hxl.inventory.model.entity.OutboundReturn;
 import com.hxl.inventory.model.entity.User;
 import com.hxl.inventory.model.vo.OutboundReturnVO;
 import com.hxl.inventory.service.DrugService;
 import com.hxl.inventory.service.InventoryService;
 import com.hxl.inventory.service.OutboundItemService;
+import com.hxl.inventory.service.OutboundService;
 import com.hxl.inventory.service.OutboundReturnService;
 import com.hxl.inventory.mapper.OutboundReturnMapper;
 import com.hxl.inventory.utils.LoginUserHolder;
@@ -49,6 +51,9 @@ public class OutboundReturnServiceImpl extends ServiceImpl<OutboundReturnMapper,
     @Resource
     private DrugService drugService;
 
+    @Resource
+    private OutboundService outboundService;
+
     /**
      * 允许排序字段
      */
@@ -61,6 +66,34 @@ public class OutboundReturnServiceImpl extends ServiceImpl<OutboundReturnMapper,
         ThrowUtils.throwIf(queryRequest == null, ErrorCode.PARAMS_ERROR, "请求参数为空");
         QueryWrapper<OutboundReturn> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(queryRequest.getOutboundItemId() != null, "outbound_item_id", queryRequest.getOutboundItemId());
+        String search = queryRequest.getSearch();
+        if (StrUtil.isNotBlank(search)) {
+            List<Long> drugIds = drugService.lambdaQuery()
+                    .and(wrapper -> wrapper.like(Drug::getDrugName, search).or().like(Drug::getDrugCode, search))
+                    .list()
+                    .stream()
+                    .map(Drug::getId)
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .collect(Collectors.toList());
+            if (drugIds.isEmpty()) {
+                queryWrapper.eq("id", -1L);
+            } else {
+                List<Long> outboundItemIds = outboundItemService.lambdaQuery()
+                        .in(OutboundItem::getDrugId, drugIds)
+                        .list()
+                        .stream()
+                        .map(OutboundItem::getId)
+                        .filter(Objects::nonNull)
+                        .distinct()
+                        .collect(Collectors.toList());
+                if (outboundItemIds.isEmpty()) {
+                    queryWrapper.eq("id", -1L);
+                } else {
+                    queryWrapper.in("outbound_item_id", outboundItemIds);
+                }
+            }
+        }
         String sortField = queryRequest.getSortField();
         boolean isAsc = "ascend".equalsIgnoreCase(queryRequest.getSortOrder());
         queryWrapper.orderBy(StrUtil.isNotBlank(sortField) && SORT_FIELD_WHITE_LIST.contains(sortField), isAsc, sortField);
@@ -144,6 +177,16 @@ public class OutboundReturnServiceImpl extends ServiceImpl<OutboundReturnMapper,
             tempDrugMap = drugService.listByIds(drugIds).stream().collect(Collectors.toMap(Drug::getId, drug -> drug));
         }
         final Map<Long, Drug> drugMap = tempDrugMap;
+        List<Long> outboundIds = outboundItemMap.values().stream()
+                .map(OutboundItem::getOutboundId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+        Map<Long, Outbound> outboundMap = new HashMap<>();
+        if (!outboundIds.isEmpty()) {
+            outboundMap = outboundService.listByIds(outboundIds).stream().collect(Collectors.toMap(Outbound::getId, outbound -> outbound));
+        }
+        final Map<Long, Outbound> finalOutboundMap = outboundMap;
 
         List<OutboundReturnVO> voList = returnList.stream().map(outboundReturn -> {
             OutboundReturnVO vo = new OutboundReturnVO();
@@ -152,6 +195,10 @@ public class OutboundReturnServiceImpl extends ServiceImpl<OutboundReturnMapper,
             if (outboundItem != null) {
                 vo.setDrugId(outboundItem.getDrugId());
                 vo.setBatchNo(outboundItem.getBatchNo());
+                Outbound outbound = finalOutboundMap.get(outboundItem.getOutboundId());
+                if (outbound != null) {
+                    vo.setOutboundNo(outbound.getOutboundNo());
+                }
                 Drug drug = drugMap.get(outboundItem.getDrugId());
                 if (drug != null) {
                     vo.setDrugName(drug.getDrugName());

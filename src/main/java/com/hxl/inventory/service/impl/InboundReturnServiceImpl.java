@@ -11,12 +11,14 @@ import com.hxl.inventory.model.dto.inboundreturn.InboundReturnAddItemRequest;
 import com.hxl.inventory.model.dto.inboundreturn.InboundReturnAddRequest;
 import com.hxl.inventory.model.dto.inboundreturn.InboundReturnQueryRequest;
 import com.hxl.inventory.model.entity.Drug;
+import com.hxl.inventory.model.entity.Inbound;
 import com.hxl.inventory.model.entity.InboundItem;
 import com.hxl.inventory.model.entity.Inventory;
 import com.hxl.inventory.model.entity.InboundReturn;
 import com.hxl.inventory.model.entity.User;
 import com.hxl.inventory.model.vo.InboundReturnVO;
 import com.hxl.inventory.service.DrugService;
+import com.hxl.inventory.service.InboundService;
 import com.hxl.inventory.service.InboundItemService;
 import com.hxl.inventory.service.InventoryService;
 import com.hxl.inventory.service.InboundReturnService;
@@ -48,6 +50,9 @@ public class InboundReturnServiceImpl extends ServiceImpl<InboundReturnMapper, I
     @Resource
     private DrugService drugService;
 
+    @Resource
+    private InboundService inboundService;
+
     private static final List<String> SORT_FIELD_WHITE_LIST = Arrays.asList(
             "id", "return_date", "create_time"
     );
@@ -57,6 +62,34 @@ public class InboundReturnServiceImpl extends ServiceImpl<InboundReturnMapper, I
         ThrowUtils.throwIf(queryRequest == null, ErrorCode.PARAMS_ERROR, "请求参数为空");
         QueryWrapper<InboundReturn> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(queryRequest.getInboundItemId() != null, "inbound_item_id", queryRequest.getInboundItemId());
+        String search = queryRequest.getSearch();
+        if (StrUtil.isNotBlank(search)) {
+            List<Long> drugIds = drugService.lambdaQuery()
+                    .and(wrapper -> wrapper.like(Drug::getDrugName, search).or().like(Drug::getDrugCode, search))
+                    .list()
+                    .stream()
+                    .map(Drug::getId)
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .collect(Collectors.toList());
+            if (drugIds.isEmpty()) {
+                queryWrapper.eq("id", -1L);
+            } else {
+                List<Long> inboundItemIds = inboundItemService.lambdaQuery()
+                        .in(InboundItem::getDrugId, drugIds)
+                        .list()
+                        .stream()
+                        .map(InboundItem::getId)
+                        .filter(Objects::nonNull)
+                        .distinct()
+                        .collect(Collectors.toList());
+                if (inboundItemIds.isEmpty()) {
+                    queryWrapper.eq("id", -1L);
+                } else {
+                    queryWrapper.in("inbound_item_id", inboundItemIds);
+                }
+            }
+        }
         String sortField = queryRequest.getSortField();
         boolean isAsc = "ascend".equalsIgnoreCase(queryRequest.getSortOrder());
         queryWrapper.orderBy(StrUtil.isNotBlank(sortField) && SORT_FIELD_WHITE_LIST.contains(sortField), isAsc, sortField);
@@ -125,8 +158,18 @@ public class InboundReturnServiceImpl extends ServiceImpl<InboundReturnMapper, I
             // 批量查询药品，补齐药品名称/编码展示字段
             drugMap = drugService.listByIds(drugIds).stream().collect(Collectors.toMap(Drug::getId, drug -> drug));
         }
+        List<Long> inboundIds = inboundItemMap.values().stream()
+                .map(InboundItem::getInboundId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+        Map<Long, Inbound> inboundMap = new HashMap<>();
+        if (!inboundIds.isEmpty()) {
+            inboundMap = inboundService.listByIds(inboundIds).stream().collect(Collectors.toMap(Inbound::getId, inbound -> inbound));
+        }
 
         Map<Long, Drug> finalDrugMap = drugMap;
+        Map<Long, Inbound> finalInboundMap = inboundMap;
         List<InboundReturnVO> voList = returnList.stream().map(inboundReturn -> {
             InboundReturnVO vo = new InboundReturnVO();
             BeanUtils.copyProperties(inboundReturn, vo);
@@ -134,6 +177,10 @@ public class InboundReturnServiceImpl extends ServiceImpl<InboundReturnMapper, I
             if (inboundItem != null) {
                 vo.setDrugId(inboundItem.getDrugId());
                 vo.setBatchNo(inboundItem.getBatchNo());
+                Inbound inbound = finalInboundMap.get(inboundItem.getInboundId());
+                if (inbound != null) {
+                    vo.setInboundNo(inbound.getInboundNo());
+                }
                 Drug drug = finalDrugMap.get(inboundItem.getDrugId());
                 if (drug != null) {
                     vo.setDrugName(drug.getDrugName());

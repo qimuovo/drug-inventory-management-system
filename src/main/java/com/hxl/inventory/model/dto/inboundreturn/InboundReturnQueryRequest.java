@@ -18,5 +18,10 @@ public class InboundReturnQueryRequest extends PageRequest implements Serializab
      */
     private Long inboundItemId;
 
+    /**
+     * 搜索关键词（模糊匹配药品名称、药品编码）
+     */
+    private String search;
+
     private static final long serialVersionUID = 1L;
 }

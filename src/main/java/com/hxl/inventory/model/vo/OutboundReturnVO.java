@@ -17,6 +17,11 @@ public class OutboundReturnVO implements Serializable {
 
     private Long outboundItemId;
 
+    /**
+     * 原出库单号
+     */
+    private String outboundNo;
+
     private Long drugId;
 
     private String drugName;
