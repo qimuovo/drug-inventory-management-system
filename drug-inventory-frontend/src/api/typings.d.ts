@@ -11,9 +11,9 @@ declare namespace API {
     message?: string;
   };
 
-  type BaseResponsePageManufacturer_ = {
+  type BaseResponsePageManufacturerVO_ = {
     code?: number;
-    data?: PageManufacturer_;
+    data?: PageManufacturerVO_;
     message?: string;
   };
 
@@ -73,17 +73,6 @@ declare namespace API {
     updateTime?: string;
   };
 
-  type Manufacturer = {
-    address?: string;
-    contactPerson?: string;
-    createTime?: string;
-    id?: number;
-    isDeleted?: number;
-    manufacturerName?: string;
-    phone?: string;
-    updateTime?: string;
-  };
-
   type ManufacturerAddRequest = {
     address?: string;
     contactPerson?: string;
@@ -106,6 +95,16 @@ declare namespace API {
     phone?: string;
   };
 
+  type ManufacturerVO = {
+    address?: string;
+    contactPerson?: string;
+    createTime?: string;
+    id?: number;
+    manufacturerName?: string;
+    phone?: string;
+    updateTime?: string;
+  };
+
   type PageDrugVO_ = {
     current?: number;
     pages?: number;
@@ -114,10 +113,10 @@ declare namespace API {
     total?: number;
   };
 
-  type PageManufacturer_ = {
+  type PageManufacturerVO_ = {
     current?: number;
     pages?: number;
-    records?: Manufacturer[];
+    records?: ManufacturerVO[];
     size?: number;
     total?: number;
   };

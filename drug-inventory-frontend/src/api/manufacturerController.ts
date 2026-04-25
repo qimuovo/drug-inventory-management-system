@@ -55,12 +55,15 @@ export async function listManufacturerByPageUsingPost(
   body: API.ManufacturerQueryRequest,
   options?: { [key: string]: any }
 ) {
-  return request<API.BaseResponsePageManufacturer_>("/api/manufacturer/page", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    data: body,
-    ...(options || {}),
-  });
+  return request<API.BaseResponsePageManufacturerVO_>(
+    "/api/manufacturer/page",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: body,
+      ...(options || {}),
+    }
+  );
 }
