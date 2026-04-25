@@ -1,4 +1,4 @@
-FROM maven:3.9.9-eclipse-temurin-11 AS builder
+FROM docker.m.daocloud.io/library/maven:3.9.9-eclipse-temurin-11 AS builder
 
 WORKDIR /app
 
@@ -8,7 +8,7 @@ RUN mvn -B dependency:go-offline
 COPY src ./src
 RUN mvn -B clean package -DskipTests
 
-FROM eclipse-temurin:11-jre
+FROM docker.m.daocloud.io/library/eclipse-temurin:11-jre
 
 WORKDIR /app
 
