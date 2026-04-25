@@ -21,6 +21,9 @@ public class UserController {
     @Resource
     private UserService userService;
 
+    /**
+     * 用户登录
+     */
     @PostMapping("/login")
     @ApiOperation("用户登录")
     public BaseResponse<UserLoginVO> login(@RequestBody UserLoginRequest request) {
@@ -31,6 +34,9 @@ public class UserController {
         return ResultUtils.success(loginUserVO);
     }
 
+    /**
+     * 获取当前登录用户
+     */
     @GetMapping("/get/login")
     @ApiOperation("获取当前登录用户")
     public BaseResponse<UserVO> getLoginUser() {
