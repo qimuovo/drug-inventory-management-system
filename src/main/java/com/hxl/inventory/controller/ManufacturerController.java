@@ -6,7 +6,7 @@ import com.hxl.inventory.common.ResultUtils;
 import com.hxl.inventory.model.dto.manufacturer.ManufacturerAddRequest;
 import com.hxl.inventory.model.dto.manufacturer.ManufacturerQueryRequest;
 import com.hxl.inventory.model.dto.manufacturer.ManufacturerUpdateRequest;
-import com.hxl.inventory.model.entity.Manufacturer;
+import com.hxl.inventory.model.vo.ManufacturerVO;
 import com.hxl.inventory.service.ManufacturerService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +28,7 @@ public class ManufacturerController {
      */
     @PostMapping("/page")
     @ApiOperation("分页获取厂家列表")
-    public BaseResponse<Page<Manufacturer>> listManufacturerByPage(
+    public BaseResponse<Page<ManufacturerVO>> listManufacturerByPage(
             @RequestBody ManufacturerQueryRequest queryRequest) {
         return ResultUtils.success(manufacturerService.listManufacturerByPage(queryRequest));
     }

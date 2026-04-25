@@ -11,6 +11,7 @@ import com.hxl.inventory.model.dto.manufacturer.ManufacturerAddRequest;
 import com.hxl.inventory.model.entity.Manufacturer;
 import com.hxl.inventory.model.dto.manufacturer.ManufacturerQueryRequest;
 import com.hxl.inventory.model.dto.manufacturer.ManufacturerUpdateRequest;
+import com.hxl.inventory.model.vo.ManufacturerVO;
 import com.hxl.inventory.service.ManufacturerService;
 import com.hxl.inventory.mapper.ManufacturerMapper;
 import org.springframework.beans.BeanUtils;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
 * @author 29358
@@ -51,12 +53,15 @@ public class ManufacturerServiceImpl extends ServiceImpl<ManufacturerMapper, Man
     }
 
     @Override
-    public Page<Manufacturer> listManufacturerByPage(ManufacturerQueryRequest queryRequest) {
+    public Page<ManufacturerVO> listManufacturerByPage(ManufacturerQueryRequest queryRequest) {
         ThrowUtils.throwIf(queryRequest == null, ErrorCode.PARAMS_ERROR, "请求参数为空");
         long current = queryRequest.getCurrent();
         long pageSize = queryRequest.getPageSize();
         ThrowUtils.throwIf(current <= 0 || pageSize <= 0, ErrorCode.PARAMS_ERROR, "分页参数错误");
-        return this.page(new Page<>(current, pageSize), this.getQueryWrapper(queryRequest));
+        Page<Manufacturer> manufacturerPage = this.page(new Page<>(current, pageSize), this.getQueryWrapper(queryRequest));
+        Page<ManufacturerVO> voPage = new Page<>(manufacturerPage.getCurrent(), manufacturerPage.getSize(), manufacturerPage.getTotal());
+        voPage.setRecords(manufacturerPage.getRecords().stream().map(this::getManufacturerVO).collect(Collectors.toList()));
+        return voPage;
     }
 
     @Override
@@ -83,6 +88,18 @@ public class ManufacturerServiceImpl extends ServiceImpl<ManufacturerMapper, Man
     public boolean deleteManufacturer(Long id) {
         ThrowUtils.throwIf(id == null || id <= 0, ErrorCode.PARAMS_ERROR, "厂家ID错误");
         return this.removeById(id);
+    }
+
+    /**
+     * 实体转厂家展示对象
+     */
+    private ManufacturerVO getManufacturerVO(Manufacturer manufacturer) {
+        if (manufacturer == null) {
+            return null;
+        }
+        ManufacturerVO manufacturerVO = new ManufacturerVO();
+        BeanUtils.copyProperties(manufacturer, manufacturerVO);
+        return manufacturerVO;
     }
 }
 

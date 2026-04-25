@@ -6,6 +6,7 @@ import com.hxl.inventory.model.dto.manufacturer.ManufacturerAddRequest;
 import com.hxl.inventory.model.entity.Manufacturer;
 import com.hxl.inventory.model.dto.manufacturer.ManufacturerQueryRequest;
 import com.hxl.inventory.model.dto.manufacturer.ManufacturerUpdateRequest;
+import com.hxl.inventory.model.vo.ManufacturerVO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -29,7 +30,7 @@ public interface ManufacturerService extends IService<Manufacturer> {
      * @param queryRequest 查询请求
      * @return 厂家分页数据
      */
-    Page<Manufacturer> listManufacturerByPage(ManufacturerQueryRequest queryRequest);
+    Page<ManufacturerVO> listManufacturerByPage(ManufacturerQueryRequest queryRequest);
 
     /**
      * 新增厂家
